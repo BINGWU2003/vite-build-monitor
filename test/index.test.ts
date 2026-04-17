@@ -162,6 +162,33 @@ describe('vite-build-memory-monitor', () => {
     expect(offSpy).toHaveBeenCalledWith('uncaughtException', handler)
   })
 
+  it('records transform hook memory snapshots', () => {
+    mockMemorySequence([
+      { heapMb: 60, rssMb: 120 }, // buildStart snapshot
+      { heapMb: 88, rssMb: 140 }, // transform snapshot
+      { heapMb: 70, rssMb: 130 }, // closeBundle snapshot
+    ])
+
+    const plugin = createMemoryMonitorPlugin({
+      logFile: 'logs/transform.log',
+      printSummary: false,
+    })
+
+    invokeBuildHook(plugin.buildStart, {})
+    invokeBuildHook(plugin.transform, 'const value = 42', 'src/main.ts')
+    invokeBuildHook(plugin.closeBundle, undefined)
+
+    const absoluteLogFile = resolve(process.cwd(), 'logs/transform.log')
+    expect(fsMock.appendFileSync).toHaveBeenCalledWith(
+      absoluteLogFile,
+      expect.stringContaining('[阶段] [transform:src/main.ts'),
+    )
+    expect(fsMock.appendFileSync).toHaveBeenCalledWith(
+      absoluteLogFile,
+      expect.stringContaining('[最终峰值] 88.0 MB | 阶段: transform:src/main.ts'),
+    )
+  })
+
   it('emits machine-readable json logs when logFormat is json', () => {
     mockMemorySequence([
       { heapMb: 30, rssMb: 60 }, // buildStart snapshot

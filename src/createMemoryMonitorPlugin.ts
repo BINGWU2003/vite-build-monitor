@@ -273,6 +273,13 @@ export default function createMemoryMonitorPlugin(options: MemoryMonitorOptions 
       snapshot(phase)
     },
 
+    transform(code, id) {
+      const sourceSizeKb = NodeBuffer.byteLength(code, 'utf8') / 1024
+      phase = `transform:${id}`
+      snapshot(`${phase} (${sourceSizeKb.toFixed(1)}KB)`)
+      return null
+    },
+
     renderChunk(code, chunk) {
       const chunkSizeKb = NodeBuffer.byteLength(code, 'utf8') / 1024
       phase = `renderChunk:${chunk.fileName}`
