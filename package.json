@@ -1,19 +1,27 @@
 {
-  "name": "pkg-placeholder",
+  "name": "vite-build-monitor",
   "type": "module",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "packageManager": "pnpm@10.33.0",
-  "description": "_description_",
-  "author": "Anthony Fu <anthonyfu117@hotmail.com>",
+  "description": "A Vite plugin to monitor heap and RSS memory usage during build.",
+  "author": "BINGWU2003",
   "license": "MIT",
-  "funding": "https://github.com/sponsors/antfu",
-  "homepage": "https://github.com/antfu/pkg-placeholder#readme",
+  "homepage": "https://github.com/BINGWU2003/vite-build-monitor#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/antfu/pkg-placeholder.git"
+    "url": "git+https://github.com/BINGWU2003/vite-build-monitor.git"
   },
-  "bugs": "https://github.com/antfu/pkg-placeholder/issues",
-  "keywords": [],
+  "bugs": "https://github.com/BINGWU2003/vite-build-monitor/issues",
+  "keywords": [
+    "vite",
+    "vite-plugin",
+    "build",
+    "memory",
+    "monitor",
+    "heap",
+    "rss",
+    "diagnostics"
+  ],
   "sideEffects": false,
   "exports": {
     ".": "./dist/index.mjs",
@@ -25,12 +33,14 @@
   "files": [
     "dist"
   ],
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
     "build": "tsdown",
     "dev": "tsdown --watch",
     "lint": "eslint",
-    "prepublishOnly": "nr build",
-    "release": "bumpp",
+    "prepublishOnly": "pnpm run typecheck && pnpm run test -- --run && pnpm run build",
     "start": "tsx src/index.ts",
     "test": "vitest",
     "typecheck": "tsc",
@@ -41,13 +51,11 @@
     "@antfu/ni": "catalog:cli",
     "@antfu/utils": "catalog:inlined",
     "@types/node": "catalog:types",
-    "bumpp": "catalog:cli",
     "eslint": "catalog:cli",
     "lint-staged": "catalog:cli",
     "publint": "catalog:cli",
     "simple-git-hooks": "catalog:cli",
     "tsdown": "catalog:cli",
-    "tsnapi": "catalog:testing",
     "tsx": "catalog:cli",
     "typescript": "catalog:cli",
     "vite": "catalog:cli",

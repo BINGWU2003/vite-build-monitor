@@ -1,2 +1,4 @@
-export const one = 1
-export const two = 2
+import createMemoryMonitorPlugin from './createMemoryMonitorPlugin'
+
+export type { LogFormat, MemoryMonitorOptions } from './types'
+export default createMemoryMonitorPlugin
