@@ -40,6 +40,7 @@
     "build": "tsdown",
     "dev": "tsdown --watch",
     "lint": "eslint",
+    "publish": "pnpm run lint && pnpm run typecheck && pnpm run test -- --run && pnpm run build && pnpm publish --access public",
     "prepublishOnly": "pnpm run typecheck && pnpm run test -- --run && pnpm run build",
     "start": "tsx src/index.ts",
     "test": "vitest",
