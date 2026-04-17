@@ -1,9 +1,9 @@
 # vite-build-monitor
 
-[![npm version][npm-version-src]][npm-version-href]
-[![npm downloads][npm-downloads-src]][npm-downloads-href]
-[![bundle][bundle-src]][bundle-href]
-[![License][license-src]][license-href]
+[npm version](https://npmjs.com/package/vite-build-monitor)
+[npm downloads](https://npmjs.com/package/vite-build-monitor)
+[bundle](https://bundlephobia.com/result?p=vite-build-monitor)
+[License](https://github.com/BINGWU2003/vite-build-monitor/blob/main/LICENSE.md)
 
 一个用于监控 Vite 构建阶段内存使用情况的插件，支持记录 heap / RSS 快照、峰值追踪、异常阶段诊断与总构建耗时。
 
@@ -48,36 +48,29 @@ interface MemoryMonitorOptions {
 ```
 
 - `logFile`
-  日志文件路径。传相对路径时会按 `process.cwd()` 解析。
-  默认：自动生成到 `./vite-build-monitor/` 目录，例如 `./vite-build-monitor/build-memory-20260418-101530.log`
-
+日志文件路径。传相对路径时会按 `process.cwd()` 解析。
+默认：自动生成到 `./vite-build-monitor/` 目录，例如 `./vite-build-monitor/build-memory-20260418-101530.log`
 - `sampleIntervalMs`
-  峰值轮询间隔（毫秒），小于 `50` 会自动提升到 `50`。
-  默认：`100`
-
+峰值轮询间隔（毫秒），小于 `50` 会自动提升到 `50`。
+默认：`100`
 - `appendLog`
-  是否在每次构建时追加日志，而不是覆盖旧文件。
-  默认：`false`
-
+是否在每次构建时追加日志，而不是覆盖旧文件。
+默认：`false`
 - `captureUncaughtException`
-  是否监听 `uncaughtException`，在崩溃前记录阶段和内存。
-  默认：`true`
-
+是否监听 `uncaughtException`，在崩溃前记录阶段和内存。
+默认：`true`
 - `printSummary`
-  是否在控制台输出最终峰值摘要。
-  默认：`true`
-
+是否在控制台输出最终峰值摘要。
+默认：`true`
 - `precision`
-  日志中内存值（MB）的保留小数位。
-  默认：`1`
-
+日志中内存值（MB）的保留小数位。
+默认：`1`
 - `logFormat`
-  日志输出格式，`pretty` 为易读文本，`json` 为机器可读 JSON Lines。
-  默认：`pretty`
-
+日志输出格式，`pretty` 为易读文本，`json` 为机器可读 JSON Lines。
+默认：`pretty`
 - `summaryTopN`
-  构建结束时摘要里展示的高内存阶段数量。
-  默认：`3`
+构建结束时摘要里展示的高内存阶段数量。
+默认：`3`
 
 ## 美化日志示例（pretty）
 
@@ -103,21 +96,11 @@ interface MemoryMonitorOptions {
 
 ```bash
 pnpm run typecheck
-pnpm run test -- --run
+pnpm run test
 pnpm run build
+pnpm run publish
 ```
 
 ## License
 
 [MIT](./LICENSE.md)
-
-<!-- Badges -->
-
-[npm-version-src]: https://img.shields.io/npm/v/vite-build-monitor?style=flat&colorA=080f12&colorB=1fa669
-[npm-version-href]: https://npmjs.com/package/vite-build-monitor
-[npm-downloads-src]: https://img.shields.io/npm/dm/vite-build-monitor?style=flat&colorA=080f12&colorB=1fa669
-[npm-downloads-href]: https://npmjs.com/package/vite-build-monitor
-[bundle-src]: https://img.shields.io/bundlephobia/minzip/vite-build-monitor?style=flat&colorA=080f12&colorB=1fa669&label=minzip
-[bundle-href]: https://bundlephobia.com/result?p=vite-build-monitor
-[license-src]: https://img.shields.io/github/license/BINGWU2003/vite-build-monitor.svg?style=flat&colorA=080f12&colorB=1fa669
-[license-href]: https://github.com/BINGWU2003/vite-build-monitor/blob/main/LICENSE.md
