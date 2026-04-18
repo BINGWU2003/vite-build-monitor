@@ -113,7 +113,7 @@ type HookName
 pnpm run typecheck
 pnpm run test
 pnpm run build
-pnpm run publish
+pnpm run release
 ```
 
 ## License
