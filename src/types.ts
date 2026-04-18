@@ -1,4 +1,13 @@
 export type LogFormat = 'pretty' | 'json'
+export type HookName
+  = 'buildStart'
+    | 'buildEnd'
+    | 'renderStart'
+    | 'transform'
+    | 'renderChunk'
+    | 'generateBundle'
+    | 'writeBundle'
+    | 'closeBundle'
 
 export interface MemoryMonitorOptions {
   /**
@@ -34,6 +43,11 @@ export interface MemoryMonitorOptions {
    * Number of top high-memory phases to include in summary.
    */
   summaryTopN?: number
+  /**
+   * Controls which hook logs should be excluded from output.
+   * Defaults to no excluded hooks.
+   */
+  excludeHooks?: HookName[]
 }
 
 export interface MemorySample {

@@ -26,6 +26,7 @@ export default defineConfig({
       sampleIntervalMs: 100,
       logFormat: 'pretty',
       summaryTopN: 3,
+      excludeHooks: ['buildEnd', 'renderStart'],
       printSummary: true,
     }),
   ],
@@ -44,7 +45,18 @@ interface MemoryMonitorOptions {
   precision?: number
   logFormat?: 'pretty' | 'json'
   summaryTopN?: number
+  excludeHooks?: HookName[]
 }
+
+type HookName
+  = 'buildStart'
+    | 'buildEnd'
+    | 'renderStart'
+    | 'transform'
+    | 'renderChunk'
+    | 'generateBundle'
+    | 'writeBundle'
+    | 'closeBundle'
 ```
 
 - `logFile`
@@ -71,6 +83,9 @@ interface MemoryMonitorOptions {
 - `summaryTopN`
 构建结束时摘要里展示的高内存阶段数量。
 默认：`3`
+- `excludeHooks`
+指定不输出哪些钩子的日志。默认不排除任何钩子。
+示例：`['buildEnd', 'renderStart']`
 
 ## 美化日志示例（pretty）
 

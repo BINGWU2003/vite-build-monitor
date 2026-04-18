@@ -1,5 +1,6 @@
 import type { Plugin } from 'vite'
 import type {
+  HookName,
   MemoryDelta,
   MemoryMonitorOptions,
   MemorySample,
@@ -26,8 +27,10 @@ export default function createMemoryMonitorPlugin(options: MemoryMonitorOptions 
   const captureUncaughtException = options.captureUncaughtException ?? true
   const printSummary = options.printSummary ?? true
   const logFormat = options.logFormat ?? 'pretty'
+  const excludedHookSet = new Set<HookName>(options.excludeHooks ?? [])
 
   let phase = 'init'
+  let currentHook: HookName = 'buildStart'
   let peakHeapMb = 0
   let peakPhase = 'init'
   let buildStartedAtMs: number | undefined
@@ -42,6 +45,7 @@ export default function createMemoryMonitorPlugin(options: MemoryMonitorOptions 
   const formatDuration = (durationMs: number): string => `${(durationMs / 1000).toFixed(2)} 秒 (${durationMs} 毫秒)`
 
   const resolveLogFileForBuild = (): string => userLogFile ?? buildDefaultLogFilePath(new Date())
+  const shouldLogHook = (hook: HookName): boolean => !excludedHookSet.has(hook)
 
   const write = (message: string): void => {
     fs.appendFileSync(currentLogFile, `${message}\n`)
@@ -124,10 +128,11 @@ export default function createMemoryMonitorPlugin(options: MemoryMonitorOptions 
     return true
   }
 
-  const snapshot = (label: string): MemorySample => {
+  const snapshot = (label: string, hook: HookName): MemorySample => {
     const sample = readMemorySample()
     updatePeak(sample, label)
-    writeSample('阶段', label, sample)
+    if (shouldLogHook(hook))
+      writeSample('阶段', label, sample)
     return sample
   }
 
@@ -205,7 +210,8 @@ export default function createMemoryMonitorPlugin(options: MemoryMonitorOptions 
       const sample = readMemorySample()
       const phaseLabel = phase
       updatePeak(sample, phaseLabel)
-      writeSample('崩溃', phaseLabel, sample)
+      if (shouldLogHook(currentHook))
+        writeSample('崩溃', phaseLabel, sample)
       writeEvent('错误', stringifyError(error), { phase: phaseLabel })
     }
     process.on('uncaughtException', uncaughtHandler)
@@ -216,7 +222,7 @@ export default function createMemoryMonitorPlugin(options: MemoryMonitorOptions 
     timer = setInterval(() => {
       const sample = readMemorySample()
       const phaseLabel = phase
-      if (updatePeak(sample, phaseLabel))
+      if (updatePeak(sample, phaseLabel) && shouldLogHook(currentHook))
         writeSample('峰值', phaseLabel, sample)
     }, sampleIntervalMs)
     timer.unref?.()
@@ -232,6 +238,7 @@ export default function createMemoryMonitorPlugin(options: MemoryMonitorOptions 
     apply: 'build',
 
     buildStart() {
+      currentHook = 'buildStart'
       phase = 'buildStart'
       peakHeapMb = 0
       peakPhase = phase
@@ -258,47 +265,54 @@ export default function createMemoryMonitorPlugin(options: MemoryMonitorOptions 
 
       setupUncaughtHook()
       startSampling()
-      snapshot(phase)
+      snapshot(phase, currentHook)
     },
 
     buildEnd(error) {
+      currentHook = 'buildEnd'
       phase = 'buildEnd'
-      snapshot(phase)
+      snapshot(phase, currentHook)
       if (error)
         writeEvent('构建错误', stringifyError(error))
     },
 
     renderStart() {
+      currentHook = 'renderStart'
       phase = 'renderStart'
-      snapshot(phase)
+      snapshot(phase, currentHook)
     },
 
     transform(code, id) {
+      currentHook = 'transform'
       const sourceSizeKb = NodeBuffer.byteLength(code, 'utf8') / 1024
       phase = `transform:${id}`
-      snapshot(`${phase} (${sourceSizeKb.toFixed(1)}KB)`)
+      snapshot(`${phase} (${sourceSizeKb.toFixed(1)}KB)`, currentHook)
       return null
     },
 
     renderChunk(code, chunk) {
+      currentHook = 'renderChunk'
       const chunkSizeKb = NodeBuffer.byteLength(code, 'utf8') / 1024
       phase = `renderChunk:${chunk.fileName}`
-      snapshot(`${phase} (${chunkSizeKb.toFixed(1)}KB)`)
+      snapshot(`${phase} (${chunkSizeKb.toFixed(1)}KB)`, currentHook)
     },
 
     generateBundle() {
+      currentHook = 'generateBundle'
       phase = 'generateBundle'
-      snapshot(phase)
+      snapshot(phase, currentHook)
     },
 
     writeBundle() {
+      currentHook = 'writeBundle'
       phase = 'writeBundle'
-      snapshot(phase)
+      snapshot(phase, currentHook)
     },
 
     closeBundle(error) {
+      currentHook = 'closeBundle'
       phase = 'closeBundle'
-      snapshot(phase)
+      snapshot(phase, currentHook)
       if (error)
         writeEvent('关闭错误', stringifyError(error))
 

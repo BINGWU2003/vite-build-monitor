@@ -189,6 +189,34 @@ describe('vite-build-memory-monitor', () => {
     )
   })
 
+  it('supports excluding hook logs via excludeHooks option', () => {
+    mockMemorySequence([
+      { heapMb: 55, rssMb: 120 }, // buildStart snapshot
+      { heapMb: 95, rssMb: 145 }, // renderStart snapshot (filtered)
+      { heapMb: 70, rssMb: 130 }, // closeBundle snapshot
+    ])
+
+    const plugin = createMemoryMonitorPlugin({
+      logFile: 'logs/hooks.log',
+      excludeHooks: ['renderStart'],
+      printSummary: false,
+    })
+
+    invokeBuildHook(plugin.buildStart, {})
+    invokeBuildHook(plugin.renderStart)
+    invokeBuildHook(plugin.closeBundle, undefined)
+
+    const absoluteLogFile = resolve(process.cwd(), 'logs/hooks.log')
+    const output = fsMock.appendFileSync.mock.calls
+      .filter(([file]) => file === absoluteLogFile)
+      .map(([, line]) => String(line))
+      .join('\n')
+
+    expect(output).toContain('[阶段] [buildStart')
+    expect(output).toContain('[阶段] [closeBundle')
+    expect(output).not.toContain('[阶段] [renderStart')
+  })
+
   it('emits machine-readable json logs when logFormat is json', () => {
     mockMemorySequence([
       { heapMb: 30, rssMb: 60 }, // buildStart snapshot
