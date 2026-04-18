@@ -1,7 +1,7 @@
 {
   "name": "vite-build-monitor",
   "type": "module",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "packageManager": "pnpm@10.33.0",
   "description": "A Vite plugin to monitor heap and RSS memory usage during build.",
   "author": "BINGWU2003",
@@ -40,8 +40,7 @@
     "build": "tsdown",
     "dev": "tsdown --watch",
     "lint": "eslint",
-    "prepublishOnly": "pnpm run typecheck && pnpm run test && pnpm run build",
-    "release": "pnpm prepublishOnly && pnpm publish --access public",
+    "prepublishOnly": "pnpm typecheck && pnpm test && pnpm build",
     "start": "tsx src/index.ts",
     "test": "vitest --run",
     "test:watch": "vitest",

@@ -110,10 +110,10 @@ type HookName
 ## 本地自检
 
 ```bash
-pnpm run typecheck
-pnpm run test
-pnpm run build
-pnpm run release
+pnpm typecheck
+pnpm test
+pnpm build
+pnpm publish
 ```
 
 ## License
